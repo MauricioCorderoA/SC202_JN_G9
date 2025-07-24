@@ -29,50 +29,47 @@ public class SistemaVuelo {
             boolean accesoConcedido = false;
             
             while (intentos < 3 && !accesoConcedido) {
-                try {
-                    Object[] opciones = {"Administrador", "Cliente", "Salir"};
-                    int tipoUsuario = JOptionPane.showOptionDialog(
-                        null, 
-                        "Seleccione tipo de usuario:", 
-                        "Inicio de Sesión",
-                        JOptionPane.DEFAULT_OPTION, 
-                        JOptionPane.QUESTION_MESSAGE, 
-                        null, 
-                        opciones, 
-                        opciones[0]
-                    );
+                
+                Object[] opciones = {"Administrador", "Cliente", "Salir"};
+                int tipoUsuario = JOptionPane.showOptionDialog(
+                    null, 
+                    "Seleccione tipo de usuario:", 
+                    "Inicio de Sesión",
+                    JOptionPane.DEFAULT_OPTION, 
+                    JOptionPane.QUESTION_MESSAGE, 
+                    null, 
+                    opciones, 
+                    opciones[0]
+                );
 
-                    if (tipoUsuario == 2 || tipoUsuario == JOptionPane.CLOSED_OPTION) {
-                        JOptionPane.showMessageDialog(null, "Sistema cerrado");
-                        return;
-                    }
-
-                    String id = JOptionPane.showInputDialog("Ingrese su ID:");
-                    String password = JOptionPane.showInputDialog("Ingrese su contraseña:");
-
-                    if (tipoUsuario == 0 && id.equals(ADMIN.getIdAdministrador())&& password.equals(ADMIN.getContrasenaAdmin())) {
-                        if (ADMIN.getNombreAdmin()==null){
-                            ADMIN.setNombreAdmin(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
-                        }
-                        menuAdministrador();
-                        accesoConcedido = true;
-                    } 
-                    else if (tipoUsuario == 1 && id.equals(CLIENTE.getIdCliente())&& password.equals(CLIENTE.getContrasenaCliente())) {
-                        if (CLIENTE.getNombreCliente()==null && CLIENTE.getPasaporte()==null){
-                            CLIENTE.setNombreCliente(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
-                            CLIENTE.setPasaporte(JOptionPane.showInputDialog("Ingrese su pasaporte"));
-                        }
-                        menuCliente();
-                        accesoConcedido = true;
-                    } 
-                    else {
-                        intentos++;
-                        JOptionPane.showMessageDialog(null, 
-                            "Credenciales incorrectas\nIntentos restantes: " + (3 - intentos));
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Debe ingresar valores numéricos");
+                if (tipoUsuario == 2 || tipoUsuario == JOptionPane.CLOSED_OPTION) {
+                    JOptionPane.showMessageDialog(null, "Sistema cerrado");
+                    return;
                 }
+
+                String id = JOptionPane.showInputDialog("Ingrese su ID:");
+                String password = JOptionPane.showInputDialog("Ingrese su contraseña:");
+
+                if (tipoUsuario == 0 && id.equals(ADMIN.getIdAdministrador())&& password.equals(ADMIN.getContrasenaAdmin())) {
+                    if (ADMIN.getNombreAdmin()==null){
+                        ADMIN.setNombreAdmin(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
+                    }
+                    menuAdministrador();
+                    accesoConcedido = true;
+                } 
+                else if (tipoUsuario == 1 && id.equals(CLIENTE.getIdCliente())&& password.equals(CLIENTE.getContrasenaCliente())) {
+                    if (CLIENTE.getNombreCliente()==null && CLIENTE.getPasaporte()==null){
+                        CLIENTE.setNombreCliente(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
+                        CLIENTE.setPasaporte(JOptionPane.showInputDialog("Ingrese su pasaporte"));
+                    }
+                    menuCliente();
+                    accesoConcedido = true;
+                } 
+                else {
+                    intentos++;
+                    JOptionPane.showMessageDialog(null, 
+                        "Credenciales incorrectas\nIntentos restantes: " + (3 - intentos));
+                }    
             }
 
             if (intentos >= 3) {
