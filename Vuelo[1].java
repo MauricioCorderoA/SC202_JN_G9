@@ -68,7 +68,6 @@ public class Vuelo {
 
 public void setFilas(int filas) {
     this.filas = filas;
-    // Update seat matrix and total count after changing filas
     this.asientoDisponibles = new int[filas][asientosDisp];
     this.asientosTotales = filas * asientosDisp;
 }
