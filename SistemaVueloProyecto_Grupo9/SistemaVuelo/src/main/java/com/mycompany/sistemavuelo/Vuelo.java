@@ -10,6 +10,8 @@ package com.mycompany.sistemavuelo;
  */
 public class Vuelo {
     
+    
+    
     private String nombreDelVuelo;
     private int filas;
     private int numeroVuelo;
@@ -27,7 +29,11 @@ public class Vuelo {
         this.filas = filas;
         this.asientosTotales = filas * asientosDisp;
         this.asientoDisponibles = new int[filas][asientosDisp]; // matriz de disponibilidad
+   
     }
+    
+    
+
 
     // Getters y Setters
     public String getNombreDelVuelo() {
@@ -85,5 +91,8 @@ public class Vuelo {
     public void setAsientoDisponibles(int[][] asientoDisponibles) {
         this.asientoDisponibles = asientoDisponibles;
     }
+
+  
+
 
 }

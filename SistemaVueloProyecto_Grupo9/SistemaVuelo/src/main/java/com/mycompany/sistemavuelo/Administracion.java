@@ -1,4 +1,4 @@
-// Controla las operaciones administrativas del sistema
+package com.mycompany.sistemavuelo;
 // Registra informacion clave para la gestion de vuelos
 
 public class Administracion {
@@ -12,3 +12,5 @@ public class Administracion {
     private String horarioLaboral;     // Horario de operacion 
     private int VuelosDiarios;     // Total de vuelos al dia
 }
+
+
