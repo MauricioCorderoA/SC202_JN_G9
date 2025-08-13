@@ -18,6 +18,7 @@ public class SistemaVuelo {
     private static int totalVuelos = 0;
     private static int totalVentas = 0;
     private static final VentasCliente[] ventas = new VentasCliente[20]; // máximo 20 ventas
+    
     public static void main(String[] args) {
         
         Datos();
@@ -27,6 +28,10 @@ public class SistemaVuelo {
     }
     
     private static void iniciarSistema() {
+        Administracion administracion = new Administracion();
+        VentasCliente ventasclientes = new VentasCliente(administracion);
+        ReportesVentas reportesventas = new ReportesVentas(administracion);
+        
         while (true) {
             int intentos = 0;
             boolean accesoConcedido = false;
@@ -57,7 +62,7 @@ public class SistemaVuelo {
                     if (ADMIN.getNombreAdmin()==null){
                         ADMIN.setNombreAdmin(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
                     }
-                    menuAdministrador();
+                    menuAdministrador(administracion, reportesventas);
                     accesoConcedido = true;
                 } 
                 else if (tipoUsuario == 1 && id.equals(CLIENTE.getIdCliente())&& password.equals(CLIENTE.getContrasenaCliente())) {
@@ -65,7 +70,7 @@ public class SistemaVuelo {
                         CLIENTE.setNombreCliente(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
                         CLIENTE.setPasaporte(JOptionPane.showInputDialog("Ingrese su pasaporte"));
                     }
-                    menuCliente();
+                    menuCliente(ventasclientes, administracion);
                     accesoConcedido = true;
                 } 
                 else {
@@ -102,7 +107,7 @@ public class SistemaVuelo {
         
     }
     
-    private static void menuAdministrador() {
+    private static void menuAdministrador(Administracion administracion, ReportesVentas reportesventas) {
         final String[] OPCIONES = {
             "Crear vuelo", 
             "Modificar vuelo", 
@@ -126,12 +131,12 @@ public class SistemaVuelo {
             );
 
             switch (opcion) {
-            case 0 -> crearVuelo();
-            case 1 -> modificarVuelo();
-            case 2 -> eliminarVuelo();
-            case 3 -> verTodosLosVuelos();
+            case 0 -> administracion.crearVuelo();
+            case 1 -> administracion.ModificarVuelo();
+            case 2 -> administracion.EliminarVuelo();
+            case 3 -> administracion.VuelosRegistrados();
 
-                case 4 -> VentasDelSistema();
+                case 4 -> VentasDelSistema(reportesventas);
                 case 5, JOptionPane.CLOSED_OPTION -> {
                     JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
                     return;
@@ -140,7 +145,7 @@ public class SistemaVuelo {
         }
     }
     
-    private static void VentasDelSistema() {
+    private static void VentasDelSistema(ReportesVentas reportesventas) {
         final String[] OPCIONES = {
             "Mostrar reservas", 
             "Mostrar ganancias", 
@@ -160,7 +165,7 @@ public class SistemaVuelo {
             );
             
             switch (opcion) {
-                case 0 -> mostrarReservas();
+                case 0 -> reportesventas.mostrarDatosVuelos();
                 case 1 -> mostrarGanancias();
 
                 case 2, JOptionPane.CLOSED_OPTION -> {
@@ -171,11 +176,12 @@ public class SistemaVuelo {
         }
     }
 
-    private static void menuCliente() {
+    private static void menuCliente(VentasCliente ventasclientes, Administracion administracion) {
         final String[] OPCIONES = {
             "Ver vuelos disponibles", 
             "Hacer reservación", 
-            "Cancelar reservación", 
+            "Cancelar reservación",
+            "Reservas hechas",
             "Salir"
         };
 
@@ -192,10 +198,11 @@ public class SistemaVuelo {
             );
 
             switch (opcion) {
-                case 0 -> verVuelosDisponibles();
-                case 1 -> hacerReservacion();
-                case 2 -> cancelarReservacion();
-                case 3, JOptionPane.CLOSED_OPTION -> {
+                case 0 -> administracion.VuelosRegistrados();
+                case 1 -> ventasclientes.Reservar();
+                case 2 -> ventasclientes.CancelarReserva();
+                case 3 -> System.out.println("por implementar");
+                case 4, JOptionPane.CLOSED_OPTION -> {
                     JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
                     return;
                 }
@@ -203,77 +210,6 @@ public class SistemaVuelo {
         }
     }
     
-    private static void crearVuelo() {
-    if (totalVuelos >= vuelos.length) {
-        JOptionPane.showMessageDialog(null, "No se pueden registrar más vuelos");
-        return;
-    }
-
-    String nombre = JOptionPane.showInputDialog("Nombre del vuelo:");
-    String destino = JOptionPane.showInputDialog("Destino:");
-    int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo:"));
-    int filas = Integer.parseInt(JOptionPane.showInputDialog("Cantidad de filas:"));
-    int columnas = Integer.parseInt(JOptionPane.showInputDialog("Asientos por fila:"));
-
-    vuelos[totalVuelos] = new Vuelo(numero, destino, columnas, filas, nombre);
-    totalVuelos++;
-
-    JOptionPane.showMessageDialog(null, "Vuelo creado exitosamente");
-}
-
-    private static void modificarVuelo() {
-    int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo a modificar:"));
-    
-    for (int i = 0; i < totalVuelos; i++) {
-        if (vuelos[i].getNumeroVuelo() == numero) {
-            String nuevoDestino = JOptionPane.showInputDialog("Nuevo destino:");
-            vuelos[i].setDestino(nuevoDestino);
-            JOptionPane.showMessageDialog(null, "Vuelo modificado");
-            return;
-        }
-    }
-
-    JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
-}
-
-    private static void eliminarVuelo() {
-    int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo a eliminar:"));
-    
-    for (int i = 0; i < totalVuelos; i++) {
-        if (vuelos[i].getNumeroVuelo() == numero) {
-            for (int j = i; j < totalVuelos - 1; j++) {
-                vuelos[j] = vuelos[j + 1];
-            }
-            vuelos[totalVuelos - 1] = null;
-            totalVuelos--;
-            JOptionPane.showMessageDialog(null, "Vuelo eliminado");
-            return;
-        }
-    }
-
-    JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
-}
-
-    private static void verTodosLosVuelos() {
-    if (totalVuelos == 0) {
-        JOptionPane.showMessageDialog(null, "No hay vuelos registrados");
-        return;
-    }
-
-    String info = "Vuelos registrados:\n";
-    for (int i = 0; i < totalVuelos; i++) {
-        info += "Vuelo: " + vuelos[i].getNombreDelVuelo() +
-                " | Nº: " + vuelos[i].getNumeroVuelo() +
-                " | Destino: " + vuelos[i].getDestino() + "\n";
-    }
-
-    JOptionPane.showMessageDialog(null, info);
-}
-
-    private static void mostrarReservas() {
-    JOptionPane.showMessageDialog(null, "Reservas activas: " + totalVentas);
-}
-
     private static void mostrarGanancias() {
     double total = 0;
 
@@ -284,83 +220,6 @@ public class SistemaVuelo {
     }
 
     JOptionPane.showMessageDialog(null, "Ganancias totales: $" + total);
-}
-
-    private static void verVuelosDisponibles() {
-    if (totalVuelos == 0) {
-        JOptionPane.showMessageDialog(null, "No hay vuelos disponibles");
-        return;
-    }
-
-    String info = "Vuelos disponibles:\n";
-    for (int i = 0; i < totalVuelos; i++) {
-        info += "Vuelo: " + vuelos[i].getNombreDelVuelo() +
-                " | Nº: " + vuelos[i].getNumeroVuelo() +
-                " | Destino: " + vuelos[i].getDestino() +
-                " | Asientos: " + vuelos[i].getAsientosDisp() + "\n";
-    }
-
-    JOptionPane.showMessageDialog(null, info);
-}
-
-    private static void hacerReservacion() {
-    if (totalVentas >= ventas.length) {
-        JOptionPane.showMessageDialog(null, "No se pueden registrar más ventas");
-        return;
-    }
-
-    int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo:"));
-    for (int i = 0; i < totalVuelos; i++) {
-        if (vuelos[i].getNumeroVuelo() == numero) {
-            int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Cantidad de boletos:"));
-            if (cantidad <= vuelos[i].getAsientosDisp()) {
-                vuelos[i].setAsientosDisp(vuelos[i].getAsientosDisp() - cantidad);
-
-                VentasCliente venta = new VentasCliente();
-                venta.idVenta = "V" + (totalVentas + 1);
-                venta.fechaVenta = "2025-08-12";
-                venta.cantidadBoletos = cantidad;
-                venta.montoTotal = cantidad * 100.0;
-                venta.estado = "activa";
-                venta.metodoPago = "efectivo";
-                venta.numeroVuelo = String.valueOf(numero);
-
-                ventas[totalVentas] = venta;
-                totalVentas++;
-
-                JOptionPane.showMessageDialog(null, "Reservación exitosa");
-                return;
-            } else {
-                JOptionPane.showMessageDialog(null, "No hay suficientes asientos");
-                return;
-            }
-        }
-    }
-
-    JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
-}
-
-    private static void cancelarReservacion() {
-    String id = JOptionPane.showInputDialog("ID de la venta:");
-    
-    for (int i = 0; i < totalVentas; i++) {
-        if (ventas[i].idVenta.equals(id) && ventas[i].estado.equals("activa")) {
-            ventas[i].estado = "cancelada";
-
-            int numero = Integer.parseInt(ventas[i].numeroVuelo);
-            for (int j = 0; j < totalVuelos; j++) {
-                if (vuelos[j].getNumeroVuelo() == numero) {
-                    vuelos[j].setAsientosDisp(vuelos[j].getAsientosDisp() + ventas[i].cantidadBoletos);
-                    break;
-                }
-            }
-
-            JOptionPane.showMessageDialog(null, "Reservación cancelada");
-            return;
-        }
-    }
-
-    JOptionPane.showMessageDialog(null, "Venta no encontrada o ya cancelada");
 }
 
     

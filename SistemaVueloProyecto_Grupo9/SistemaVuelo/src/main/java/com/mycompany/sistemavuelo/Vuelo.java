@@ -16,24 +16,30 @@ public class Vuelo {
     private int filas;
     private int numeroVuelo;
     private String destino;
-    private int asientosDisp;
+    private int columnas;
     private int asientosTotales;
     private int[][] asientoDisponibles;
 
-    // Constructor
-    public Vuelo(int numeroVuelo, String destino, int asientosDisp, int filas, String nombreDelVuelo) {
+    // Constructores
+    public Vuelo(){   
+    }
+    
+    public Vuelo(int numeroVuelo, String destino, int columnas, int filas, String nombreDelVuelo) {
         this.nombreDelVuelo = nombreDelVuelo;
         this.numeroVuelo = numeroVuelo;
         this.destino = destino;
-        this.asientosDisp = asientosDisp;
+        this.columnas = columnas;
         this.filas = filas;
-        this.asientosTotales = filas * asientosDisp;
-        this.asientoDisponibles = new int[filas][asientosDisp]; // matriz de disponibilidad
+        CalcularAsientos();
    
     }
     
+    //metodo
     
-
+    public void CalcularAsientos(){
+        this.asientosTotales=this.filas * this.columnas;
+        this.asientoDisponibles = new int[this.filas][this.columnas];
+    }
 
     // Getters y Setters
     public String getNombreDelVuelo() {
@@ -60,18 +66,21 @@ public class Vuelo {
         this.destino = destino;
     }
 
-    public int getAsientosDisp() {
-        return asientosDisp;
+    public int getColumnas() {
+        return columnas;
     }
 
-    public void setAsientosDisp(int asientosDisp) {
-        this.asientosDisp = asientosDisp;
-        this.asientoDisponibles = new int[filas][asientosDisp];
-        this.asientosTotales = filas * asientosDisp;
+    public void setColumnas(int columnas) {
+        this.columnas = columnas;
+        CalcularAsientos();
     }
 
     public int getAsientosTotales() {
         return asientosTotales;
+    }
+    
+    public void setAsientosTotales(int asientosTotales){
+        this.asientosTotales = asientosTotales;
     }
 
     public int[][] getAsientoDisponibles() {
@@ -80,12 +89,11 @@ public class Vuelo {
     
      public int getFilas() {
     return filas;
-}
+    }
 
     public void setFilas(int filas) {
         this.filas = filas;
-        this.asientoDisponibles = new int[filas][asientosDisp];
-        this.asientosTotales = filas * asientosDisp;
+        CalcularAsientos();
     }
 
     public void setAsientoDisponibles(int[][] asientoDisponibles) {

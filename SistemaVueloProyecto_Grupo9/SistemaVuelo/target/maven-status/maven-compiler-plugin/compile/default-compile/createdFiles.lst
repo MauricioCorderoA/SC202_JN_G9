@@ -1,7 +1,7 @@
 com\mycompany\sistemavuelo\Administrador.class
-Administracion.class
 com\mycompany\sistemavuelo\Vuelo.class
-ReporteVentas.class
+com\mycompany\sistemavuelo\ReportesVentas.class
+com\mycompany\sistemavuelo\Administracion.class
+com\mycompany\sistemavuelo\VentasCliente.class
 com\mycompany\sistemavuelo\SistemaVuelo.class
-VentasCliente.class
 com\mycompany\sistemavuelo\Cliente.class
