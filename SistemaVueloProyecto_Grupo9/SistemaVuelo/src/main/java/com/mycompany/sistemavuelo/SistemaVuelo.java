@@ -14,10 +14,10 @@ public class SistemaVuelo {
     
     private static final Administrador ADMIN = new Administrador("Admin", "1234A");
     private static final Cliente CLIENTE = new Cliente("cliente", "9876C");
-    private static final Vuelo[] vuelos = new Vuelo[10]; // máximo 10 vuelos
+    private static final Vuelo[] vuelos = new Vuelo[10]; // maximo 10 vuelos
     private static int totalVuelos = 0;
     private static int totalVentas = 0;
-    private static final VentasCliente[] ventas = new VentasCliente[20]; // máximo 20 ventas
+    private static final VentasCliente[] ventas = new VentasCliente[20]; // maximo 20 ventas
     
     public static void main(String[] args) {
         Datos();
@@ -38,7 +38,7 @@ public class SistemaVuelo {
                 int tipoUsuario = JOptionPane.showOptionDialog(
                     null, 
                     "Seleccione tipo de usuario:", 
-                    "Inicio de Sesion",
+                    "Inicio de Sesión",
                     JOptionPane.DEFAULT_OPTION, 
                     JOptionPane.QUESTION_MESSAGE, 
                     null, 
@@ -115,7 +115,7 @@ public class SistemaVuelo {
             int opcion = JOptionPane.showOptionDialog(
                 null, 
                 "Menu de Administrador", 
-                "Administracion", 
+                "Administración", 
                 JOptionPane.DEFAULT_OPTION, 
                 JOptionPane.PLAIN_MESSAGE, 
                 null, 
@@ -147,7 +147,7 @@ public class SistemaVuelo {
         while (true) {
             int opcion = JOptionPane.showOptionDialog(
                 null, 
-                "Menu de Administrador", 
+                "Menú de Administrador", 
                 "Reportes del sistema", 
                 JOptionPane.DEFAULT_OPTION, 
                 JOptionPane.PLAIN_MESSAGE, 
@@ -160,7 +160,7 @@ public class SistemaVuelo {
                 case 0 -> reportesventas.mostrarDatosVuelos();
                 case 1 -> mostrarGanancias();
                 case 2, JOptionPane.CLOSED_OPTION -> {
-                    JOptionPane.showMessageDialog(null, "Volviendo al menú de administrador");
+                    JOptionPane.showMessageDialog(null, "Volviendo al menu de administrador");
                     return;
                 }
             }
@@ -172,7 +172,7 @@ public class SistemaVuelo {
             "Ver vuelos disponibles", 
             "Hacer reservacion", 
             "Cancelar reservacion",
-            "Ver mis facturas",  // Facturas disponibles
+            "Ver mis facturas",  // Texto actualizado
             "Salir"
         };
 
@@ -192,7 +192,7 @@ public class SistemaVuelo {
                 case 0 -> administracion.VuelosRegistrados();
                 case 1 -> ventasclientes.Reservar();
                 case 2 -> ventasclientes.CancelarReserva();
-                case 3 -> ventasclientes.mostrarFacturasCliente();  // Sistema de Facturas
+                case 3 -> ventasclientes.mostrarFacturasCliente();  // Nueva funcionalidad
                 case 4, JOptionPane.CLOSED_OPTION -> {
                     JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                     return;
