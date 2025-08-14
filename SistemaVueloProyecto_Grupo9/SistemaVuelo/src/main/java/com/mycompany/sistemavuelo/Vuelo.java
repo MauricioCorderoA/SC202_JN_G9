@@ -4,6 +4,8 @@
  */
 package com.mycompany.sistemavuelo;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Maytan
@@ -18,19 +20,24 @@ public class Vuelo {
     private String destino;
     private int columnas;
     private int asientosTotales;
-    private int[][] asientoDisponibles;
+    private int asientosDisponibles;
+    private int TicketsComprados;
+    private double precioTicket;
 
     // Constructores
     public Vuelo(){   
     }
     
-    public Vuelo(int numeroVuelo, String destino, int columnas, int filas, String nombreDelVuelo) {
+    public Vuelo(int numeroVuelo, String destino, int columnas, int filas, String nombreDelVuelo, double precioTicket) {
         this.nombreDelVuelo = nombreDelVuelo;
         this.numeroVuelo = numeroVuelo;
         this.destino = destino;
         this.columnas = columnas;
         this.filas = filas;
+        this.precioTicket = precioTicket;
         CalcularAsientos();
+        this.asientosDisponibles= this.asientosTotales;
+        this.TicketsComprados= 0;
    
     }
     
@@ -38,10 +45,25 @@ public class Vuelo {
     
     public void CalcularAsientos(){
         this.asientosTotales=this.filas * this.columnas;
-        this.asientoDisponibles = new int[this.filas][this.columnas];
     }
 
     // Getters y Setters
+    public double getPrecioTicket(){
+        return precioTicket;
+    }
+    
+    public void setPrecioTicket(double precioTicket){
+        this.precioTicket=precioTicket;
+    }
+    
+    public int getTicketsComprados(){
+        return TicketsComprados;
+    }
+    
+    public void setTicketsComprados(int TicketsComprados){
+        this.TicketsComprados=TicketsComprados;
+    }
+    
     public String getNombreDelVuelo() {
         return nombreDelVuelo;
     }
@@ -83,8 +105,12 @@ public class Vuelo {
         this.asientosTotales = asientosTotales;
     }
 
-    public int[][] getAsientoDisponibles() {
-        return asientoDisponibles;
+    public int getAsientosDisponibles() {
+        return asientosDisponibles;
+    }
+    
+    public void setAsientosDisponibles(int asientoDisponibles){
+        this.asientosDisponibles=asientoDisponibles;
     }
     
      public int getFilas() {
@@ -95,24 +121,19 @@ public class Vuelo {
         this.filas = filas;
         CalcularAsientos();
     }
-
-    public void setAsientoDisponibles(int[][] asientoDisponibles) {
-        this.asientoDisponibles = asientoDisponibles;
+    
+    public String MostrarVuelo(){
+        
+        String info = "Vuelo registrado:\n";
+        info +=
+                "Id del vuelo: " + this.numeroVuelo + "\n" + 
+                "Nombre del vuelo: " + this.nombreDelVuelo+ "\n"+ 
+                "Destino: " + this.destino + "\n" + 
+                "Asientos totales: " + this.asientosTotales+ "\n"+ 
+                "Precio del ticket: " + this.precioTicket + "\n" + 
+                "Tickets comprados: " + this.TicketsComprados+ "\n";
+        
+        return info;
     }
-
-    int getAsientosDisponibles() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    int getPrecio() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    String getOrigen() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-  
-
 
 }

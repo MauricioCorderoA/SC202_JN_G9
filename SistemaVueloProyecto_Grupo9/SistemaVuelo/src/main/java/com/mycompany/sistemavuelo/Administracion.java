@@ -12,6 +12,11 @@ public class Administracion {
     int contador = 0;
     Vuelo[] vuelos= new Vuelo[100];
     
+    public Administracion(){
+        vuelos[contador++] = new Vuelo(12, "Mexico", 4, 5, "Vuelo a Mexico", 100);
+        vuelos[contador++] = new Vuelo(45, "Argentida", 7, 2, "Vuelo Mate", 50);
+    }
+    
     //encapsuladores
     public int getContador(){
         return contador;
@@ -40,8 +45,9 @@ public class Administracion {
         int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo:"));
         int filas = Integer.parseInt(JOptionPane.showInputDialog("Cantidad de filas:"));
         int columnas = Integer.parseInt(JOptionPane.showInputDialog("Asientos por fila:"));
+        double precioboletos= Double.parseDouble(JOptionPane.showInputDialog("Ingrese el precio de los boletos"));
 
-        vuelos[contador++] = new Vuelo(numero, destino, columnas, filas, nombre);
+        vuelos[contador++] = new Vuelo(numero, destino, columnas, filas, nombre, precioboletos);
         JOptionPane.showMessageDialog(null, "Vuelo creado exitosamente");
         vuelosCreados++;
         
@@ -49,40 +55,64 @@ public class Administracion {
     
     public void ModificarVuelo(){
         int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo a modificar:"));
-    
+        boolean encontrado=false;
+        
         for (int i = 0; i < contador; i++) {
-            if (vuelos[i].getNumeroVuelo() == numero) {
-                String nuevoNombre = JOptionPane.showInputDialog("Anterior nombre "+vuelos[i].getNombreDelVuelo()+"\nIngrese el nuevo nombre");
-                String nuevoDestino = JOptionPane.showInputDialog("Anterior destino "+vuelos[i].getDestino()+"\nIngrese el nuevo destino de su vuelo");
-                int nuevoNumero = Integer.parseInt(JOptionPane.showInputDialog("Anterior numero del vuelo "+vuelos[i].getNumeroVuelo()+"\nIngrese el nuevo numero"));
-                int nuevasFilas = Integer.parseInt(JOptionPane.showInputDialog("Anterior numero de filas "+vuelos[i].getFilas()+"\nIngrese la nueva cantidad de filas"));
-                int nuevasColumnas = Integer.parseInt(JOptionPane.showInputDialog("Anterior numero de columnas "+vuelos[i].getColumnas()+"\nIngrese la nueva cantidad de asientos por fila"));
-                vuelos[i]= new Vuelo(nuevoNumero, nuevoDestino, nuevasColumnas, nuevasFilas, nuevoNombre);
-                JOptionPane.showMessageDialog(null, "Vuelo modificado correctamente");
-                vuelosModificados++;
-                return;
+            if (vuelos[i].getNumeroVuelo() == numero ) {
+                encontrado=true;
+                
+                if (vuelos[i].getTicketsComprados()<=0){
+                    String nuevoNombre = JOptionPane.showInputDialog("Anterior nombre "+vuelos[i].getNombreDelVuelo()+"\nIngrese el nuevo nombre");
+                    String nuevoDestino = JOptionPane.showInputDialog("Anterior destino "+vuelos[i].getDestino()+"\nIngrese el nuevo destino de su vuelo");
+                    int nuevoNumero = vuelos[i].getNumeroVuelo();
+                    int nuevasFilas = Integer.parseInt(JOptionPane.showInputDialog("Anterior numero de filas "+vuelos[i].getFilas()+"\nIngrese la nueva cantidad de filas"));
+                    int nuevasColumnas = Integer.parseInt(JOptionPane.showInputDialog("Anterior numero de columnas "+vuelos[i].getColumnas()+"\nIngrese la nueva cantidad de asientos por fila"));
+                    double nuevoprecioboletos= Double.parseDouble(JOptionPane.showInputDialog("Anterior precio: "+vuelos[i].getPrecioTicket()+"\nIngrese el precio nuevo que desea registrar"));
+                    vuelos[i]= new Vuelo(nuevoNumero, nuevoDestino, nuevasColumnas, nuevasFilas, nuevoNombre, nuevoprecioboletos);
+                    vuelosModificados++;
+                    JOptionPane.showMessageDialog(null, "Vuelo modificado correctamente");
+                }else {
+                JOptionPane.showMessageDialog(null, "El vuelo fue encontrado en embargo este ya se encuentra con reservas"); 
             }
+            break; 
+            
+            }
+            
+        }
+        
+        if (!encontrado){
+            JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
         }
 
-        JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
     }
     
     public void EliminarVuelo(){
         int numero = Integer.parseInt(JOptionPane.showInputDialog("Número de vuelo a eliminar"));
+        boolean encontrado=false;
+        
         for (int i = 0; i < contador; i++) {
             if (vuelos[i].getNumeroVuelo() == numero) {
-                for (int j = i; j < contador - 1; j++) {
-                    vuelos[j] = vuelos[j + 1];
+                encontrado = true;
+                if (vuelos[i].getTicketsComprados()<=0){
+                    for (int j = i; j < contador - 1; j++) {
+                        vuelos[j] = vuelos[j + 1];
+                    }
+                    
+                    vuelos[contador - 1] = null;
+                    contador--;
+                    vuelosEliminados++;
+                    JOptionPane.showMessageDialog(null, "Vuelo eliminado");   
+                } else {
+                JOptionPane.showMessageDialog(null, "El vuelo fue encontrado en embargo este ya se encuentra con reservas");
                 }
-                vuelos[contador - 1] = null;
-                contador--;
-                JOptionPane.showMessageDialog(null, "Vuelo eliminado");
-                vuelosEliminados++;
-                return;
+                break;
             }
+        } 
+        
+        if (!encontrado){
+            JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
         }
 
-        JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
     }
     
     public void VuelosRegistrados(){
@@ -96,26 +126,15 @@ public class Administracion {
             info += "Vuelo: " + vuelos[i].getNombreDelVuelo() +
                     " | Nº: " + vuelos[i].getNumeroVuelo() +
                  " | Destino: " + vuelos[i].getDestino() + 
-                  "| Asientos totales: "+vuelos[i].getAsientosTotales()+"\n";
+                    "| Precio por ticket$: "+vuelos[i].getPrecioTicket() +
+                  "| Asientos totales: "+vuelos[i].getAsientosTotales()+
+                  "|Asientos disponibles: "+vuelos[i].getAsientosDisponibles()+"\n";
         }
 
         JOptionPane.showMessageDialog(null, info);
         
-        //hola prueba
-        //hola fabian
     }
 
-    void modificarVuelo() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    void eliminarVuelo() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    void mostrarVuelos() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }
 
 

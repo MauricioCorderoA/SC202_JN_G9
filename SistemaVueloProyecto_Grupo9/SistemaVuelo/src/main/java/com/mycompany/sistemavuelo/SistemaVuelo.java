@@ -5,19 +5,16 @@
 package com.mycompany.sistemavuelo;
 
 import javax.swing.JOptionPane;
-
+// Link del GitHub https://github.com/MauricioCorderoA/SC202_JN_G9.git
 /**
  *
  * @author Maytan
  */
 public class SistemaVuelo {
     
+    
     private static final Administrador ADMIN = new Administrador("Admin", "1234A");
     private static final Cliente CLIENTE = new Cliente("cliente", "9876C");
-    private static final Vuelo[] vuelos = new Vuelo[10]; // maximo 10 vuelos
-    private static int totalVuelos = 0;
-    private static int totalVentas = 0;
-    private static final VentasCliente[] ventas = new VentasCliente[20]; // maximo 20 ventas
     
     public static void main(String[] args) {
         Datos();
@@ -27,7 +24,7 @@ public class SistemaVuelo {
     private static void iniciarSistema() {
         Administracion administracion = new Administracion();
         VentasCliente ventasclientes = new VentasCliente(administracion);
-        ReportesVentas reportesventas = new ReportesVentas(administracion);
+        ReportesVentas reportesventas = new ReportesVentas(administracion, ventasclientes);
         
         while (true) {
             int intentos = 0;
@@ -58,7 +55,7 @@ public class SistemaVuelo {
                     if (ADMIN.getNombreAdmin() == null){
                         ADMIN.setNombreAdmin(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
                     }
-                    menuAdministrador(administracion, reportesventas);
+                    menuAdministrador(administracion, reportesventas, ventasclientes);
                     accesoConcedido = true;
                 } 
                 else if (tipoUsuario == 1 && id.equals(CLIENTE.getIdCliente()) && password.equals(CLIENTE.getContrasenaCliente())) {
@@ -101,7 +98,7 @@ public class SistemaVuelo {
         CLIENTE.MostrarDatosCliente();
     }
     
-    private static void menuAdministrador(Administracion administracion, ReportesVentas reportesventas) {
+    private static void menuAdministrador(Administracion administracion, ReportesVentas reportesventas, VentasCliente ventasclientes) {
         final String[] OPCIONES = {
             "Crear vuelo", 
             "Modificar vuelo", 
@@ -128,7 +125,7 @@ public class SistemaVuelo {
                 case 1 -> administracion.ModificarVuelo();
                 case 2 -> administracion.EliminarVuelo();
                 case 3 -> administracion.VuelosRegistrados();
-                case 4 -> VentasDelSistema(reportesventas);
+                case 4 -> VentasDelSistema(reportesventas, ventasclientes);
                 case 5, JOptionPane.CLOSED_OPTION -> {
                     JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                     return;
@@ -137,9 +134,9 @@ public class SistemaVuelo {
         }
     }
     
-    private static void VentasDelSistema(ReportesVentas reportesventas) {
+    private static void VentasDelSistema(ReportesVentas reportesventas, VentasCliente ventasclientes) {
         final String[] OPCIONES = {
-            "Mostrar reservas", 
+            "Mostrar acciones realizadas", 
             "Mostrar ganancias", 
             "Salir"
         };
@@ -158,7 +155,7 @@ public class SistemaVuelo {
             
             switch (opcion) {
                 case 0 -> reportesventas.mostrarDatosVuelos();
-                case 1 -> mostrarGanancias();
+                case 1 -> reportesventas.mostrarganancias();
                 case 2, JOptionPane.CLOSED_OPTION -> {
                     JOptionPane.showMessageDialog(null, "Volviendo al menu de administrador");
                     return;
@@ -201,15 +198,4 @@ public class SistemaVuelo {
         }
     }
     
-    private static void mostrarGanancias() {
-        double total = 0;
-
-        for (int i = 0; i < totalVentas; i++) {
-            if (ventas[i] != null && ventas[i].getEstado().equals("activa")) {
-                total += ventas[i].getMontoTotal();
-            }
-        }
-
-        JOptionPane.showMessageDialog(null, "Ganancias totales: $" + total);
-    }
 }

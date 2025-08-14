@@ -12,18 +12,15 @@ import javax.swing.JOptionPane;
  */
 public class ReportesVentas {
     
-    private int reservasActivas;          // Cantidad de reservas vigentes 
-    private double gananciasTotales;      // Suma total de ingresos 
-    private int vuelosCancelados;         // Contador de cancelaciones 
-    private double promedioVenta;         // Promedio de montos por venta 
-    private int clientesAtendidos;        // Total de clientes
+    private double gananciasTotales;      // Suma total de ingresos
     private String vueloMasVendido;       // ID del vuelo con mas ventas 
-    private double costoPromedioBoleto;   // Precio promedio por boleto
     
     private Administracion administracion;
+    private VentasCliente ventascliente;
     
-    public ReportesVentas (Administracion administracion){
+    public ReportesVentas (Administracion administracion, VentasCliente ventascliente){
         this.administracion=administracion;
+        this.ventascliente= ventascliente;
     }
     
     public void mostrarDatosVuelos(){
@@ -40,5 +37,41 @@ public class ReportesVentas {
                                 + "Vuelos Modificados: "+administracion.getVuelosModificados()+"\n"
                                         + "Vuelos eliminados: "+administracion.getVuelosEliminados());
         
+    }
+    
+    public void mostrarganancias(){
+        Vuelo[] vuelos = administracion.getVuelos();
+        int totalVuelos=administracion.getContador();
+        
+        gananciasTotales = 0;
+        int maxTicketsVendidos=0;
+        Vuelo vueloMasVendido=null;
+        
+        String info = "===Reporte de las ganancias===\n\n";
+        
+        for (int i=0; i<totalVuelos; i++){
+            Vuelo v = vuelos[i];
+            
+            double gananciasVuelo = v.getPrecioTicket()*v.getTicketsComprados();
+            gananciasTotales+=gananciasVuelo;
+            
+            if (v.getTicketsComprados()>maxTicketsVendidos){
+                maxTicketsVendidos = v.getTicketsComprados();
+                vueloMasVendido=v;
+            }
+            
+            info+="Vuelo: " + v.getNombreDelVuelo() +
+                    " | Nº: " + v.getNumeroVuelo() +
+                 " | Tickets vendidos: " + v.getTicketsComprados() + 
+                  "| Ganancias: $"+String.format("%.2f", gananciasVuelo)+"\n";
+            
+        }
+        
+        info+="\nGanancias total de todos los vuelos: $" + String.format("%.2f", gananciasTotales);
+        JOptionPane.showMessageDialog(null, info);
+        
+        if (vueloMasVendido!=null){
+            JOptionPane.showMessageDialog(null, "===Vuelo con mas ventas===\n\n" +vueloMasVendido.MostrarVuelo(), "Vuelo mas vendido", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }

@@ -18,11 +18,12 @@ public class VentasCliente {
     public String idVenta;       // Numero unico que identifica la venta
     public int cantidadBoletos;  // Cantidad de boletos comprados
     public double montoTotal;    // Monto de la transaccion
-    public String estado;        // Estado de la venta: "activa", "cancelada", "completada"
+    public boolean estado;        // Estado de la venta: "activa", "cancelada", "completada"
     public int numeroVuelo;      // Numero de vuelo asociado a la venta 
     private Administracion administracion;
     private VentasCliente[] ventas;
-    private int totalVentas;
+    public int totalVentas;
+    public double precioTicketV;
     
     // Constructores
     public VentasCliente(){   
@@ -35,7 +36,7 @@ public class VentasCliente {
     }
     
     // Encapsuladores
-    public String getEstado() {
+    public boolean getEstado() {
         return estado;
     }
 
@@ -55,6 +56,10 @@ public class VentasCliente {
         return numeroVuelo;
     }
     
+    public double getPrecioTicketV(){
+        return precioTicketV;
+    }
+    
     // Metodos de negocio
     
     public void Reservar(){
@@ -71,15 +76,17 @@ public class VentasCliente {
             if (vuelos[i].getNumeroVuelo() == numeroVuelo){
                 int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Cantidad de boletos a comprar"));
                 
-                if (cantidad <= vuelos[i].getAsientosTotales()){
-                    vuelos[i].setAsientosTotales(vuelos[i].getAsientosTotales() - cantidad);
+                if (cantidad <= vuelos[i].getAsientosDisponibles()){
+                    vuelos[i].setAsientosDisponibles(vuelos[i].getAsientosDisponibles() - cantidad);
+                    vuelos[i].setTicketsComprados(vuelos[i].getTicketsComprados()+cantidad);
                     
-                    VentasCliente venta = new VentasCliente(null);
+                    VentasCliente venta = new VentasCliente(administracion);
                     venta.idVenta = "V" + (totalVentas + 1);
                     venta.cantidadBoletos = cantidad;
-                    venta.montoTotal = cantidad * 100.0;
-                    venta.estado = "activa";
-                    venta.numeroVuelo = numeroVuelo;  // Almacenamos el numero de vuelo
+                    venta.montoTotal = cantidad* vuelos[i].getPrecioTicket();
+                    venta.estado = true;
+                    venta.numeroVuelo = numeroVuelo; 
+                    venta.precioTicketV=vuelos[i].getPrecioTicket();
                     
                     ventas[totalVentas] = venta;
                     totalVentas++;
@@ -87,33 +94,42 @@ public class VentasCliente {
                     JOptionPane.showMessageDialog(null, "Reservacion exitosa para el vuelo " + numeroVuelo);
                     generarFactura(venta.idVenta);
                     return;
-                } else {
+                } else if (cantidad >= vuelos[i].getAsientosDisponibles()) {
                     JOptionPane.showMessageDialog(null, "Lo sentimos, no hay suficientes asientos");
                     return;
+                }else {
+                    JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
                 }
             }
         }
-        JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
+        
     }
     
     public void CancelarReserva(){
         String id = JOptionPane.showInputDialog("ID de la venta a cancelar");
     
         for (int i = 0; i < totalVentas; i++) {
-            if (ventas[i] != null && ventas[i].idVenta.equals(id) && ventas[i].estado.equals("activa")) {
-                ventas[i].estado = "cancelada";
+            if (ventas[i] != null && ventas[i].idVenta.equals(id) && ventas[i].estado == true) {
+                ventas[i].estado = false;
                 
                 // Obtenemos el numero de vuelo directamente de la venta
                 int numeroVuelo = ventas[i].numeroVuelo;
-                
                 Vuelo[] vuelos = administracion.getVuelos();
                 int totalVuelos = administracion.getContador();
                 
+                boolean vueloEncontrado = false;
+                
                 for (int j = 0; j < totalVuelos; j++) {
                     if (vuelos[j].getNumeroVuelo() == numeroVuelo) {
-                        vuelos[j].setAsientosTotales(vuelos[j].getAsientosTotales() + ventas[i].cantidadBoletos);
+                        vuelos[j].setAsientosDisponibles(vuelos[j].getAsientosDisponibles() + ventas[i].cantidadBoletos);
+                        vuelos[j].setTicketsComprados(vuelos[j].getTicketsComprados()-ventas[j].cantidadBoletos);
+                        vueloEncontrado=true;
                         break;
                     }
+                }
+                
+                if (!vueloEncontrado){
+                    JOptionPane.showMessageDialog(null, "El vuelo no fue encontrado");
                 }
 
                 JOptionPane.showMessageDialog(null, "Reservacion cancelada exitosamente");
@@ -122,7 +138,7 @@ public class VentasCliente {
             }
         }
 
-        JOptionPane.showMessageDialog(null, "Venta no encontrada o ya cancelada");
+        JOptionPane.showMessageDialog(null, "Venta no encontrada o ya se encuentra cancelada");
     }
     
     public void generarFactura(String idVenta) {
@@ -133,7 +149,7 @@ public class VentasCliente {
                                "N° Vuelo: " + ventas[i].numeroVuelo + "\n" +  // Mostramos el numero de vuelo
                                "Estado: " + ventas[i].estado + "\n" +
                                "Cantidad de boletos: " + ventas[i].cantidadBoletos + "\n" +
-                               "Precio unitario: $100.00\n" +
+                               "Precio unitario: " + ventas[i].precioTicketV+ "\n"+
                                "Total pagado: $" + String.format("%.2f", ventas[i].montoTotal) + "\n\n" +
                                "Gracias por su compra";
                 
@@ -145,33 +161,21 @@ public class VentasCliente {
     }
 
     public void mostrarFacturasCliente() {
-        StringBuilder facturas = new StringBuilder(" Mis Facturas \n\n");
-        boolean tieneFacturas = false;
+        if (totalVentas==0){
+            JOptionPane.showMessageDialog(null, "No tienes facturas registradas");
+        }
+        String facturas = (" Mis Facturas \n\n");
         
         for (int i = 0; i < totalVentas; i++) {
             if (ventas[i] != null) {
-                tieneFacturas = true;
-                facturas.append("Factura ID: ").append(ventas[i].idVenta)
-                       .append(" | Vuelo: ").append(ventas[i].numeroVuelo)  // Mostramos el vuelo
-                       .append(" | Boletos: ").append(ventas[i].cantidadBoletos)
-                       .append(" | Total: $").append(String.format("%.2f", ventas[i].montoTotal))
-                       .append(" | Estado: ").append(ventas[i].estado)
-                       .append("\n--------------------------------\n");
+                facturas+="Factura ID: " + ventas[i].idVenta+
+                    " | Vuelo: " + ventas[i].numeroVuelo +
+                 " | Boletos: " + ventas[i].cantidadBoletos + 
+                  "| Total $:  "+ String.format("%.2f", ventas[i].montoTotal)+
+                   "| Estado: "+ventas[i].estado + "\n";
             }
         }
-        
-        JOptionPane.showMessageDialog(null, 
-            tieneFacturas ? facturas.toString() : "No tienes facturas registradas",
-            "Historial de Facturas", 
-            JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, facturas);
     }
-
-    // Metodos no implementados (generados automaticamente)
-    void reservar() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    void cancelarReserva() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    
 }
