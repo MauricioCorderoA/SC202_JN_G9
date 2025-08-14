@@ -20,11 +20,8 @@ public class SistemaVuelo {
     private static final VentasCliente[] ventas = new VentasCliente[20]; // máximo 20 ventas
     
     public static void main(String[] args) {
-        
         Datos();
         iniciarSistema();
-        
-        
     }
     
     private static void iniciarSistema() {
@@ -37,12 +34,11 @@ public class SistemaVuelo {
             boolean accesoConcedido = false;
             
             while (intentos < 3 && !accesoConcedido) {
-                
                 Object[] opciones = {"Administrador", "Cliente", "Salir"};
                 int tipoUsuario = JOptionPane.showOptionDialog(
                     null, 
                     "Seleccione tipo de usuario:", 
-                    "Inicio de Sesión",
+                    "Inicio de Sesion",
                     JOptionPane.DEFAULT_OPTION, 
                     JOptionPane.QUESTION_MESSAGE, 
                     null, 
@@ -58,15 +54,15 @@ public class SistemaVuelo {
                 String id = JOptionPane.showInputDialog("Ingrese su ID:");
                 String password = JOptionPane.showInputDialog("Ingrese su contraseña:");
 
-                if (tipoUsuario == 0 && id.equals(ADMIN.getIdAdministrador())&& password.equals(ADMIN.getContrasenaAdmin())) {
-                    if (ADMIN.getNombreAdmin()==null){
+                if (tipoUsuario == 0 && id.equals(ADMIN.getIdAdministrador()) && password.equals(ADMIN.getContrasenaAdmin())) {
+                    if (ADMIN.getNombreAdmin() == null){
                         ADMIN.setNombreAdmin(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
                     }
                     menuAdministrador(administracion, reportesventas);
                     accesoConcedido = true;
                 } 
-                else if (tipoUsuario == 1 && id.equals(CLIENTE.getIdCliente())&& password.equals(CLIENTE.getContrasenaCliente())) {
-                    if (CLIENTE.getNombreCliente()==null && CLIENTE.getPasaporte()==null){
+                else if (tipoUsuario == 1 && id.equals(CLIENTE.getIdCliente()) && password.equals(CLIENTE.getContrasenaCliente())) {
+                    if (CLIENTE.getNombreCliente() == null && CLIENTE.getPasaporte() == null){
                         CLIENTE.setNombreCliente(JOptionPane.showInputDialog("Ingrese el nombre que desea registrar"));
                         CLIENTE.setPasaporte(JOptionPane.showInputDialog("Ingrese su pasaporte"));
                     }
@@ -87,24 +83,22 @@ public class SistemaVuelo {
 
             int continuar = JOptionPane.showConfirmDialog(null, 
                 "¿Desea cambiar de usuario?", 
-                "Cambiar sesión", 
+                "Cambiar sesion", 
                 JOptionPane.YES_NO_OPTION);
             
             if (continuar != JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(null, "Gracias por usar nuestro sistema\nSesión finalizada");
+                JOptionPane.showMessageDialog(null, "Gracias por usar nuestro sistema\nSesion finalizada");
                 return;
             }
         }
     }
     
-    private static void Datos(){
-        
+    private static void Datos() {
         System.out.println("Recuerde que los datos de sus usuarios son los siguientes");
         System.out.println("Datos de administrador");
         ADMIN.MostrarDatosAdmin();
         System.out.println("Datos de cliente");
         CLIENTE.MostrarDatosCliente();
-        
     }
     
     private static void menuAdministrador(Administracion administracion, ReportesVentas reportesventas) {
@@ -118,11 +112,10 @@ public class SistemaVuelo {
         };
 
         while (true) {
-            
             int opcion = JOptionPane.showOptionDialog(
                 null, 
-                "Menú de Administrador", 
-                "Administración", 
+                "Menu de Administrador", 
+                "Administracion", 
                 JOptionPane.DEFAULT_OPTION, 
                 JOptionPane.PLAIN_MESSAGE, 
                 null, 
@@ -131,14 +124,13 @@ public class SistemaVuelo {
             );
 
             switch (opcion) {
-            case 0 -> administracion.crearVuelo();
-            case 1 -> administracion.ModificarVuelo();
-            case 2 -> administracion.EliminarVuelo();
-            case 3 -> administracion.VuelosRegistrados();
-
+                case 0 -> administracion.crearVuelo();
+                case 1 -> administracion.ModificarVuelo();
+                case 2 -> administracion.EliminarVuelo();
+                case 3 -> administracion.VuelosRegistrados();
                 case 4 -> VentasDelSistema(reportesventas);
                 case 5, JOptionPane.CLOSED_OPTION -> {
-                    JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
+                    JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                     return;
                 }
             }
@@ -152,10 +144,10 @@ public class SistemaVuelo {
             "Salir"
         };
         
-        while (true){
+        while (true) {
             int opcion = JOptionPane.showOptionDialog(
                 null, 
-                "Menú de Administrador", 
+                "Menu de Administrador", 
                 "Reportes del sistema", 
                 JOptionPane.DEFAULT_OPTION, 
                 JOptionPane.PLAIN_MESSAGE, 
@@ -167,7 +159,6 @@ public class SistemaVuelo {
             switch (opcion) {
                 case 0 -> reportesventas.mostrarDatosVuelos();
                 case 1 -> mostrarGanancias();
-
                 case 2, JOptionPane.CLOSED_OPTION -> {
                     JOptionPane.showMessageDialog(null, "Volviendo al menú de administrador");
                     return;
@@ -179,16 +170,16 @@ public class SistemaVuelo {
     private static void menuCliente(VentasCliente ventasclientes, Administracion administracion) {
         final String[] OPCIONES = {
             "Ver vuelos disponibles", 
-            "Hacer reservación", 
-            "Cancelar reservación",
-            "Reservas hechas",
+            "Hacer reservacion", 
+            "Cancelar reservacion",
+            "Ver mis facturas",  // Facturas disponibles
             "Salir"
         };
 
         while (true) {
             int opcion = JOptionPane.showOptionDialog(
                 null, 
-                "Menú de Cliente", 
+                "Menu de Cliente", 
                 "Cliente", 
                 JOptionPane.DEFAULT_OPTION, 
                 JOptionPane.PLAIN_MESSAGE, 
@@ -201,9 +192,9 @@ public class SistemaVuelo {
                 case 0 -> administracion.VuelosRegistrados();
                 case 1 -> ventasclientes.Reservar();
                 case 2 -> ventasclientes.CancelarReserva();
-                case 3 -> System.out.println("por implementar");
+                case 3 -> ventasclientes.mostrarFacturasCliente();  // Sistema de Facturas
                 case 4, JOptionPane.CLOSED_OPTION -> {
-                    JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
+                    JOptionPane.showMessageDialog(null, "Volviendo al menu principal");
                     return;
                 }
             }
@@ -211,16 +202,14 @@ public class SistemaVuelo {
     }
     
     private static void mostrarGanancias() {
-    double total = 0;
+        double total = 0;
 
-    for (int i = 0; i < totalVentas; i++) {
-        if (ventas[i].getEstado().equals("activa")) {
-            total += ventas[i].getMontoTotal();
+        for (int i = 0; i < totalVentas; i++) {
+            if (ventas[i] != null && ventas[i].getEstado().equals("activa")) {
+                total += ventas[i].getMontoTotal();
+            }
         }
+
+        JOptionPane.showMessageDialog(null, "Ganancias totales: $" + total);
     }
-
-    JOptionPane.showMessageDialog(null, "Ganancias totales: $" + total);
-}
-
-    
 }
