@@ -16,13 +16,15 @@ public class Vuelo {
     
     private String nombreDelVuelo;
     private int filas;
+    private int columnas;
     private int numeroVuelo;
     private String destino;
-    private int columnas;
     private int asientosTotales;
     private int asientosDisponibles;
     private int TicketsComprados;
     private double precioTicket;
+    
+    private boolean [][] asientos;
 
     // Constructores
     public Vuelo(){   
@@ -35,16 +37,93 @@ public class Vuelo {
         this.columnas = columnas;
         this.filas = filas;
         this.precioTicket = precioTicket;
-        CalcularAsientos();
+        this.asientosTotales=filas*columnas;
         this.asientosDisponibles= this.asientosTotales;
         this.TicketsComprados= 0;
+        
+        this.asientos = new boolean [filas][columnas];
+        for (int i = 0 ; i<filas ; i++){
+            for (int j=0;j<columnas; j++){
+                asientos [i][j]=false;
+            }
+        }
    
     }
     
     //metodo
     
-    public void CalcularAsientos(){
-        this.asientosTotales=this.filas * this.columnas;
+    
+    public void mostrarAsientosDisponibles(){
+        String info = "Aientos disponibles (F = filas, C = columnas):\n";
+        for (int i = 0 ; i<filas ; i++){
+            for (int j = 0; j<columnas; j++){
+                if (asientos[i][j]==true){
+                    info += "[X]"; //el asiento esta vendido
+                }else {
+                    info+="[O]" ; //el asiento esta libre
+                }
+            }
+            info +="\n";
+        }
+        JOptionPane.showMessageDialog(null, info);
+    }
+    
+    public boolean venderAsiento(int fila, int columna){
+        if (fila < 1|| fila > filas || columna <1|| columna>columnas){
+            JOptionPane.showMessageDialog(null, "Asiento invalidado");
+            return false;
+        }
+        
+        if (asientos[fila-1][columna-1]==true){
+            JOptionPane.showMessageDialog(null, "Asiento ya vendido");
+            return false;
+        } else {
+            asientos[fila-1][columna - 1]=true;
+            asientosDisponibles --;
+            TicketsComprados++;
+            JOptionPane.showMessageDialog(null, "Asiento vendido correctamente");
+            return true;
+        }
+     
+    }
+    public boolean liberarAsiento(int fila, int columna){
+        if (fila < 1|| fila > filas || columna <1|| columna>columnas){
+            return false; //invalido
+        }if (!asientos[fila-1][columna-1]){
+            return false; //ya esta libre
+        }
+        
+        asientos[fila-1][columna-1]=false;
+        asientosDisponibles++;
+        TicketsComprados--;
+        return true;
+        
+    }
+    
+    public void recalcularAsientos(){
+        this.asientosTotales=filas*columnas;
+        this.asientosDisponibles=asientosTotales-TicketsComprados;
+        
+        boolean[][]nuevosAsientos = new boolean[filas][columnas];
+        int limiteFilas = filas;
+        if(asientos!=null && asientos.length<filas){
+            limiteFilas = asientos.length;
+            
+        }
+        
+        int limiteColumnas = columnas;
+        if(asientos!=null&&asientos[0].length<columnas){
+            limiteColumnas = asientos[0].length;
+        }
+        
+        for (int i = 0 ; i<limiteColumnas;i++){
+            for (int j=0; j<limiteColumnas;j++){
+                nuevosAsientos[i][j]=asientos[i][j];
+            }
+        }
+        
+        this.asientos=nuevosAsientos;
+        
     }
 
     // Getters y Setters
@@ -94,7 +173,7 @@ public class Vuelo {
 
     public void setColumnas(int columnas) {
         this.columnas = columnas;
-        CalcularAsientos();
+        recalcularAsientos();
     }
 
     public int getAsientosTotales() {
@@ -119,8 +198,9 @@ public class Vuelo {
 
     public void setFilas(int filas) {
         this.filas = filas;
-        CalcularAsientos();
+        recalcularAsientos();
     }
+    
     
     public String MostrarVuelo(){
         

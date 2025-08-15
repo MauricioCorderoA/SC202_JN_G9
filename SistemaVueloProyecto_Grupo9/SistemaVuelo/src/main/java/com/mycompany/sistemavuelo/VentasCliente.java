@@ -24,6 +24,9 @@ public class VentasCliente {
     private VentasCliente[] ventas;
     public int totalVentas;
     public double precioTicketV;
+    public int[] filaAsiento;
+    public int[] columnaAsiento;
+    
     
     // Constructores
     public VentasCliente(){   
@@ -36,6 +39,15 @@ public class VentasCliente {
     }
     
     // Encapsuladores
+    
+    public int[] getFilaAsiento(){
+        return filaAsiento;
+    }
+    
+    public int[] getColumnaAsiento(){
+        return columnaAsiento;
+    }
+    
     public boolean getEstado() {
         return estado;
     }
@@ -74,35 +86,42 @@ public class VentasCliente {
         
         for (int i = 0; i < totalVuelos; i++){
             if (vuelos[i].getNumeroVuelo() == numeroVuelo){
-                int cantidad = Integer.parseInt(JOptionPane.showInputDialog("Cantidad de boletos a comprar"));
+                vuelos[i].mostrarAsientosDisponibles();
+                int fila = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la fila del asiento"));
+                int columna = Integer.parseInt(JOptionPane.showInputDialog("Ingrese la columna del asiento"));
                 
-                if (cantidad <= vuelos[i].getAsientosDisponibles()){
-                    vuelos[i].setAsientosDisponibles(vuelos[i].getAsientosDisponibles() - cantidad);
-                    vuelos[i].setTicketsComprados(vuelos[i].getTicketsComprados()+cantidad);
+                boolean vendido = vuelos[i].venderAsiento(fila, columna);
+                
+                if (vendido ==true ){
                     
                     VentasCliente venta = new VentasCliente(administracion);
                     venta.idVenta = "V" + (totalVentas + 1);
-                    venta.cantidadBoletos = cantidad;
-                    venta.montoTotal = cantidad* vuelos[i].getPrecioTicket();
+                    venta.cantidadBoletos = 1;
+                    venta.montoTotal = vuelos[i].getPrecioTicket();
                     venta.estado = true;
                     venta.numeroVuelo = numeroVuelo; 
                     venta.precioTicketV=vuelos[i].getPrecioTicket();
                     
+                    venta.filaAsiento=new int[1];
+                    venta.columnaAsiento=new int[1];
+                    venta.filaAsiento[0]=fila;
+                    venta.columnaAsiento[0]=columna;
+                    
                     ventas[totalVentas] = venta;
                     totalVentas++;
                     
-                    JOptionPane.showMessageDialog(null, "Reservacion exitosa para el vuelo " + numeroVuelo);
                     generarFactura(venta.idVenta);
+                    
+                    
                     return;
-                } else if (cantidad >= vuelos[i].getAsientosDisponibles()) {
-                    JOptionPane.showMessageDialog(null, "Lo sentimos, no hay suficientes asientos");
+                } else  {
+                    JOptionPane.showMessageDialog(null, "No se pudo vender el vuelo seleccionado");
                     return;
-                }else {
-                    JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
                 }
+                   
             }
         }
-        
+        JOptionPane.showMessageDialog(null, "Vuelo no encontrado");
     }
     
     public void CancelarReserva(){
@@ -121,8 +140,15 @@ public class VentasCliente {
                 
                 for (int j = 0; j < totalVuelos; j++) {
                     if (vuelos[j].getNumeroVuelo() == numeroVuelo) {
-                        vuelos[j].setAsientosDisponibles(vuelos[j].getAsientosDisponibles() + ventas[i].cantidadBoletos);
-                        vuelos[j].setTicketsComprados(vuelos[j].getTicketsComprados()-ventas[j].cantidadBoletos);
+                        
+                        
+                        for (int k = 0; k<ventas[i].filaAsiento.length; k++){
+                            int fila = ventas[i].filaAsiento[k];
+                            int columna = ventas[i].columnaAsiento[k];
+                            vuelos[j].liberarAsiento(fila, columna);
+                        }
+                        
+                        
                         vueloEncontrado=true;
                         break;
                     }
@@ -144,13 +170,19 @@ public class VentasCliente {
     public void generarFactura(String idVenta) {
         for (int i = 0; i < totalVentas; i++) {
             if (ventas[i] != null && ventas[i].idVenta.equals(idVenta)) {
+
+                String asientosComprados = "";
+                for (int k = 0; k < ventas[i].filaAsiento.length; k++) {
+                    asientosComprados += "[F" + ventas[i].filaAsiento[k] + ", C" + ventas[i].columnaAsiento[k] + "] ";
+                }
+                
                 String factura = " Factura Vuelo \n\n" +
                                "N° Factura: " + ventas[i].idVenta + "\n" +
                                "N° Vuelo: " + ventas[i].numeroVuelo + "\n" +  // Mostramos el numero de vuelo
                                "Estado: " + ventas[i].estado + "\n" +
                                "Cantidad de boletos: " + ventas[i].cantidadBoletos + "\n" +
-                               "Precio unitario: " + ventas[i].precioTicketV+ "\n"+
-                               "Total pagado: $" + String.format("%.2f", ventas[i].montoTotal) + "\n\n" +
+                               "Monto pagado $: " + ventas[i].precioTicketV+ "\n"+
+                               ", Asiento comprado: "+asientosComprados +"\n\n" +
                                "Gracias por su compra";
                 
                 JOptionPane.showMessageDialog(null, factura, "Factura de Venta", JOptionPane.INFORMATION_MESSAGE);
@@ -168,10 +200,17 @@ public class VentasCliente {
         
         for (int i = 0; i < totalVentas; i++) {
             if (ventas[i] != null) {
+                
+                String asientosComprados = "";
+                for (int k = 0; k < ventas[i].filaAsiento.length; k++) {
+                    asientosComprados += "[F" + ventas[i].filaAsiento[k] + ", C" + ventas[i].columnaAsiento[k] + "] ";
+                }
+                
                 facturas+="Factura ID: " + ventas[i].idVenta+
                     " | Vuelo: " + ventas[i].numeroVuelo +
                  " | Boletos: " + ventas[i].cantidadBoletos + 
                   "| Total $:  "+ String.format("%.2f", ventas[i].montoTotal)+
+                               "| Asiento comprado: "+asientosComprados +"" +
                    "| Estado: "+ventas[i].estado + "\n";
             }
         }
